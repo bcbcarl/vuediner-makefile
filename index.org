@@ -1,0 +1,251 @@
+#+TITLE: 前端工程師也會 Makefile
+#+AUTHOR: Carl Su
+#+EMAIL: bcbcarl@gmail.com
+
+#+USE_MATHJAX: false
+
+#+FAVICON: images/vue.svg
+#+ICON: images/vue.svg
+#+HASHTAG: Vuediner #6 前端工程師也會 Makefile
+
+#+OPTIONS: toc:nil num:nil ^:nil
+
+* About Me
+
+- Hacking Thursday 值日生
+- GitHub: https://github.com/bcbcarl
+- 熟悉 React, Redux, ES2015 和 Functional JavaScript
+- 目前已在數個專案上使用 Makefile 管理前端開發流程
+
+#+BEGIN_CENTER
+#+ATTR_HTML: :width 100%
+[[file:images/make-target-ac.png]]
+#+END_CENTER
+
+* Example 1: Hello JavaScript API
+  :PROPERTIES:
+  :SLIDE:    segue dark quote
+  :ASIDE:    right bottom
+  :ARTICLE:  flexbox vleft auto-fadein
+  :END:
+
+* Requirements
+
+- Use TypeScript to develop client-side JavaScript APIs.
+- Lint TypeScript source code when needed (e.g.: watch, build).
+- Run unit tests to check the logic of API methods.
+- Generate TAP output and generate a report after testing.
+- Support development mode by starting a dev server.
+  + We can test these APIs under the JavaScript console.
+  + Recompile APIs as soon as a source file changes.
+  + Support verbose output to show how long the bundling took.
+  + Reload the dev server as soon as API bundle recompiled.
+  + Send a desktop notification when the build fails.
+- Build NPM package to provide APIs that runs on a web browser.
+
+* Project Folder Structures
+
+#+BEGIN_SRC bash
+$ tree hello-api
+├── Makefile
+├── README.md
+├── api.js
+├── dist
+│   ├── babel
+│   ├── release
+│   └── ts
+├── package.json
+├── hello-api.tar.gz
+├── server.js
+├── src
+├── test
+├── tsconfig.json
+├── tsconfig.prod.json
+└── tslint.json
+#+END_SRC
+
+* Getting Started
+
+In GNU Make, you *must* start a command with a [tab] character.
+
+#+BEGIN_SRC make
+$(TARGET): $(DEP1) $(DEP2) $(DEP3)
+	# `$?` contains a list of dependencies.
+	@echo $?
+	# `$@` evaluates to current TARGET name.
+	@echo $@
+	@$(COMMAND1); $(COMMAND2); $(COMMAND3)
+#+END_SRC
+
+#+BEGIN_SRC make
+.PHONY: build-babel
+build-babel: $(JS_DIR)
+	@$(RM) $(BABEL_DIR)
+	@NODE_ENV=production $(BABEL) $(JS_DIR) -d $(BABEL_DIR)
+
+$(BABEL_DIR): $(JS_DIR)
+#+END_SRC
+
+* Variable Assignment
+
+| Operator | Type          | Description                                                                                  |
+|----------+---------------+----------------------------------------------------------------------------------------------|
+| =        | Lazy Set      | Values within it are recursively expanded when the variable is used, not when it's declared. |
+| :=       | Immediate Set | Values within it are expanded at declaration time.                                           |
+| ?=       | Set If Absent | Setting of a variable only if it doesn't have a value.                                       |
+| +=       | Append        | Appending the supplied value to the existing value.                                          |
+
+* Dependency Graph
+
+You can create a graph of dependencies from GNU Make using makefile2graph.
+
+| Options | Description                                                         |
+|---------+---------------------------------------------------------------------|
+| -B      | Unconditionally make all targets.                                   |
+| -n      | Print the commands that would be executed, but do not execute them. |
+| -d      | Print debugging information in addition to normal processing.       |
+
+- =make -Bnd build | make2graph | dot -Tpng -o make-build.png=
+- https://github.com/lindenb/makefile2graph
+
+* =make build=
+
+#+BEGIN_CENTER
+#+ATTR_HTML: :width 100%
+[[file:images/make-build.png]]
+#+END_CENTER
+
+* =make dist=
+
+#+BEGIN_CENTER
+#+ATTR_HTML: :width 100%
+[[file:images/make-dist.png]]
+#+END_CENTER
+
+* =make watch=
+
+#+BEGIN_CENTER
+#+ATTR_HTML: :width 100%
+[[file:images/make-watch.png]]
+#+END_CENTER
+
+* NPM scripts
+
+#+BEGIN_SRC json
+{
+  "scripts": {
+    "clean": "make clean",
+    "distclean": "make distclean",
+    "lint": "make lint",
+    "build:ts": "make build-ts",
+    "build:babel": "make build-babel",
+    "build": "make build",
+    "dist": "make dist",
+    "watch": "make watch",
+    "serve": "make serve",
+    "start": "make start",
+    "test": "make test",
+    "release": "make release"
+  }
+}
+#+END_SRC
+
+* Fetch Posts from Reddit
+
+=index.ts=:
+
+#+BEGIN_SRC typescript
+import { fetchPosts } from "./reddit";
+export const reddit = { fetchPosts };
+#+END_SRC
+
+=reddit.ts=:
+
+#+BEGIN_SRC typescript
+export const fetchPosts = async (reddit: string) => {
+  try {
+    const json = validate(fetchPostsSchema, await get(`/r/${reddit}.json`).end());
+    return json.data.children.map((child) => child.data);
+  } catch (error) {
+    throw error;
+  }
+};
+#+END_SRC
+
+* API Dev server
+
+1. =make watch & make serve=
+2. Open http://localhost:3003/.
+3. Open JavaScript console (⌥⌘J).
+4. Fetch *vuejs* reddits via =fetchPosts=.
+
+#+BEGIN_SRC javascript
+api.reddit
+  .fetchPosts('vuejs')
+  .then(x => console.log(x));
+#+END_SRC
+
+* Build =hello-api= NPM package
+
+1. Run =make dist= to build NPM package.
+2. Run =tar tvf hello-api.tar.gz= to check the its content.
+
+#+BEGIN_SRC bash
+drwxr-xr-x  0 carlsu staff       0 11  8 17:51 ./
+-rw-r--r--  0 carlsu staff     210 11  8 17:51 ./index.js
+-rw-r--r--  0 carlsu staff    1169 11  8 17:51 ./package.json
+-rw-r--r--  0 carlsu staff    2506 11  8 17:51 ./reddit.js
+-rw-r--r--  0 carlsu staff    2349 11  8 17:51 ./reddit.schema.js
+drwxr-xr-x  0 carlsu staff       0 11  8 17:51 ./utils/
+-rw-r--r--  0 carlsu staff    5725 11  8 17:51 ./utils/agent.js
+-rw-r--r--  0 carlsu staff    1289 11  8 17:51 ./utils/index.js
+#+END_SRC
+
+* Example 2: Hello Reddit App
+  :PROPERTIES:
+  :SLIDE:    segue dark quote
+  :ASIDE:    right bottom
+  :ARTICLE:  flexbox vleft auto-fadein
+  :END:
+
+* Add Hello API Example to NPM dependencies
+
+This package comes from Hello API dev server which built with =make dist=.
+
+Add =hello-api= to NPM dependencies and install it immediately.
+
+=package.json=:
+
+#+BEGIN_SRC json
+"dependencies": {
+    "hello-api": "http://localhost:3003/hello-api.tar.gz"
+}
+#+END_SRC
+
+* Fetch Posts from Reddit
+
+=src/sagas/index.js=:
+
+#+BEGIN_SRC javascript
+import { reddit as redditApi } from 'hello-api';
+export function* fetchPosts(reddit) {
+  yield put(requestPosts({reddit}));
+  const posts = yield call(redditApi.fetchPosts, reddit);
+  yield put(receivePosts({
+    reddit,
+    posts,
+    receivedAt: Date.now()
+  }));
+}
+#+END_SRC
+
+* Start the App
+
+1. Run =npm install= to install the package we just built.
+2. Run =npm start= to start the app.
+3. Open http://localhost:3000/ to see if it works.
+
+* Thank you!
+  :PROPERTIES:
+  :SLIDE:    segue dark quote
+  :END:

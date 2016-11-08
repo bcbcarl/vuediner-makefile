@@ -1,0 +1,5 @@
+# Hello API
+
+## License
+
+MIT
