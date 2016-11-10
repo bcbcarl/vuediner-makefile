@@ -1,7 +1,7 @@
 import test from 'tape-promise/tape';
 import fetchMock from 'fetch-mock';
 
-import { reddit } from '../dist/release';
+import { reddit } from '../dist/babel';
 
 const reddit1 = {
   "domain": "self.vuejs",
