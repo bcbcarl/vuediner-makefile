@@ -13,7 +13,9 @@
 * About Me
 
 - Hacking Thursday 值日生
-- GitHub: https://github.com/bcbcarl
+- GitHub: [[https://github.com/bcbcarl][bcbcarl]]
+- 範例程式: https://github.com/bcbcarl/vuediner-makefile
+- 線上簡報: https://bcbcarl.github.io/vuediner-makefile/
 - 熟悉 React, Redux, ES2015 和 Functional JavaScript
 - 目前已在數個專案上使用 Makefile 管理前端開發流程
 
