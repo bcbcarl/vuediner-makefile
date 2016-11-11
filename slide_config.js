@@ -17,10 +17,10 @@ var SLIDE_CONFIG = {
    // Author information
    presenters: [{
      name: 'Carl Su', 
-     company: '', 
+     company: 'Hacking Thursday', 
      gplus: '', 
      twitter: '', 
      www: '', 
-     github: '', 
+     github: 'https://github.com/bcbcarl', 
    }]
 };

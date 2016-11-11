@@ -8,6 +8,9 @@
 #+ICON: images/vue.svg
 #+HASHTAG: Vuediner #6 前端工程師也會 Makefile
 
+#+COMPANY: Hacking Thursday
+#+GITHUB: https://github.com/bcbcarl
+
 #+OPTIONS: toc:nil num:nil ^:nil
 
 * About Me
@@ -249,5 +252,7 @@ export function* fetchPosts(reddit) {
 
 * Thank you!
   :PROPERTIES:
-  :SLIDE:    segue dark quote
+  :SLIDE: thank-you-slide segue
+  :ASIDE: right
+  :ARTICLE: flexbox vleft auto-fadein
   :END:
