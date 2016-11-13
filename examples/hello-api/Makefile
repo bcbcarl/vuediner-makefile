@@ -1,23 +1,19 @@
-# Requirements
+CP    := cp
+MKDIR := mkdir -p
+MV    := mv
+RM    := rm -rf
+
+# Prerequisites
 GIT = $(shell command -v git || { echo "git not found." >&2; exit 1; })
 NODE = $(shell command -v node || { echo "node not found." >&2; exit 1; })
 NPM = $(shell command -v npm || { echo "npm not found." >&2; exit 1; })
 TAR = $(shell command -v tar || { echo "tar not found." >&2; exit 1; })
 YARN = $(shell command -v yarn || { echo "yarn not found." >&2; exit 1; })
 
-# Directories
+# Dev tools
 MODULES_DIR := node_modules
 BIN_DIR := $(MODULES_DIR)/.bin
 
-SRC_DIR = src
-DIST_DIR = dist
-TEST_DIR = test
-
-JS_DIR := $(DIST_DIR)/ts
-BABEL_DIR := $(DIST_DIR)/babel
-PKG_DIR := $(DIST_DIR)/release
-
-# Dev tools
 BABEL := $(BIN_DIR)/babel
 REFRESHIFY := $(BIN_DIR)/refreshify
 TAPE := $(BIN_DIR)/tape
@@ -25,19 +21,20 @@ TAP-SPEC := $(BIN_DIR)/tap-spec
 TSC := $(BIN_DIR)/tsc
 TSLINT := $(BIN_DIR)/tslint
 
-# Files
-TS_FILES = $(shell find $(SRC_DIR) -name "*.ts" -o -name "*.tsx" -type f | sort)
-DEV_SERVER = server.js
-DEV_BUNDLE = api.js
-TSCONFIG_DEV = tsconfig.json
-TSCONFIG_PROD = tsconfig.prod.json
-RELEASE_TARBALL = hello-api.tar.gz
+# Config
+SRC_DIR := src
+DIST_DIR := dist
+TEST_DIR := test
+JS_DIR := $(DIST_DIR)/ts
+BABEL_DIR := $(DIST_DIR)/babel
+PKG_DIR := $(DIST_DIR)/release
 
-# Tasks
-CP    = cp
-MKDIR = mkdir -p
-MV    = mv
-RM    = rm -rf
+TS_FILES = $(shell find $(SRC_DIR) -name "*.ts" -o -name "*.tsx" -type f | sort)
+DEV_SERVER := server.js
+DEV_BUNDLE := api.js
+TSCONFIG_DEV := tsconfig.json
+TSCONFIG_PROD := tsconfig.prod.json
+RELEASE_TARBALL := hello-api.tar.gz
 
 # Flags
 DIST_FLAGS ?= zcvf $(RELEASE_TARBALL) -C $(PKG_DIR) .
@@ -71,7 +68,7 @@ install: package.json
 	@$(YARN)
 
 .PHONY: build-ts
-build-ts: clean install lint $(SRC_DIR)
+build-ts: $(SRC_DIR) clean install lint
 	@echo $(INFO)
 	@$(RM) $(JS_DIR)
 	@$(TSC) -p $(TSCONFIG_PROD)
@@ -109,7 +106,7 @@ test: $(PKG_DIR)
 	@$(TAPE) $(TEST_FLAGS) | $(TAP-SPEC)
 
 .PHONY: watch
-watch: install lint $(SRC_DIR)
+watch: $(SRC_DIR) install lint
 	@echo $(INFO)
 	@$(REFRESHIFY) $(WATCH_FLAGS)
 
